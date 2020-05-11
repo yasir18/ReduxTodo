@@ -8,23 +8,72 @@ import { v4 as uuid } from "uuid";
 function App() {
   const [todos, setTodos] = useState([]);
 
+  useEffect(() => {
+    getAllTodos();
+  }, []);
+
+  const getAllTodos = () => {
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json())
+      .then((todos) => {
+        setTodos([...todos]);
+      });
+  };
   const addTodo = (todoItem) => {
-    setTodos([...todos, { id: uuid(), title: todoItem, completed: false }]);
+    fetch("http://localhost:3000/todos", {
+      method: "Post",
+      headers: { "content-type": "Application/json" },
+      body: JSON.stringify({
+        id: uuid(),
+        title: todoItem,
+        completed: false,
+      }),
+    })
+      .then((res) => res.json())
+      .then((todo) => {
+        console.log(todo);
+        getAllTodos();
+      });
+    // setTodos([...todos, { id: uuid(), title: todoItem, completed: false }]);
   };
 
   const updateTodo = (key) => {
+    fetch(`http://localhost:3000/todos/${key}`)
+      .then((res) => res.json())
+      .then((todo) => {
+        fetch(`http://localhost:3000/todos/${key}`, {
+          method: "Put",
+          headers: { "content-type": "Application/json" },
+          body: JSON.stringify({
+            id: key,
+            title: todo.title,
+            completed: !todo.completed,
+          }),
+        })
+          .then((res) => res.json())
+          .then((todo) => {
+            console.log(todo);
+            getAllTodos();
+          });
+      });
+
     console.log("update");
-    const filteredTodos = todos.map((todo) => {
-      return todo.id === key ? { ...todo, completed: !todo.completed } : todo;
-    });
-    setTodos(filteredTodos);
+
+    // const filteredTodos = todos.map((todo) => {
+    //   return todo.id === key ? { ...todo, completed: !todo.completed } : todo;
+    // });
+    // setTodos(filteredTodos);
   };
 
   const deleteTodo = (key) => {
-    const filteredTodos = todos.filter((todo) => {
-      return todo.id !== key;
-    });
-    setTodos(filteredTodos);
+    fetch(`http://localhost:3000/todos/${key}`, {
+      method: "Delete",
+    }).then(getAllTodos());
+    getAllTodos();
+    // const filteredTodos = todos.filter((todo) => {
+    //   return todo.id !== key;
+    // });
+    // setTodos(filteredTodos);
   };
   console.log("App render");
 
