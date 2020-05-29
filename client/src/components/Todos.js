@@ -2,18 +2,25 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import Todo from "./Todo";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { getTodosAction } from "../actions/todoActions";
 
-function Todos(props) {
+function Todos() {
+  //dispatch(getTodosAction());
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getTodosAction());
+  }, []);
+  const todos = useSelector((state) => state.todos.todos);
+
+  console.log(todos);
   console.log("Todos component");
-  console.log(props.todos);
-  const todoItems = props.todos.map((todo) => (
+  const todoItems = todos.map((todo) => (
     <Todo
       key={todo.id}
       id={todo.id}
       title={todo.title}
       completed={todo.completed}
-      deleteTodo={props.deleteTodo}
-      updateTodo={props.updateTodo}
     />
   ));
   return (

@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { useDispatch } from "react-redux";
+import { addTodoAction } from "../actions/todoActions";
 
-export default function NewTodo(props) {
+export default function NewTodo() {
   const [todoItem, setTodoItem] = useState("");
-
+  const dispatch = useDispatch();
   const submitData = (event) => {
     event.preventDefault();
-    if (todoItem !== "") props.addTodo(todoItem);
+    if (todoItem !== "") {
+      dispatch(addTodoAction(todoItem));
+    }
     setTodoItem("");
   };
   console.log("new todo render");
